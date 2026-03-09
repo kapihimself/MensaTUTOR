@@ -1,6 +1,59 @@
 import { supabase } from './supabaseClient';
 
 // Helper to calculate level based on XP
+export interface AnalyticsData {
+  category: string;
+  totalAnswered: number;
+  correctAnswers: number;
+  accuracy: number;
+}
+
+export const fetchUserAnalytics = async (userId: string): Promise<AnalyticsData[]> => {
+  // Join user_answers with questions to group by category
+  const { data, error } = await supabase
+    .from('user_answers')
+    .select(`
+      is_correct,
+      questions ( category )
+    `)
+    .eq('user_id', userId);
+
+  if (error || !data) {
+    console.error('Error fetching analytics:', error);
+    return [];
+  }
+
+  // Aggregate stats in JS
+  const stats: Record<string, { total: number; correct: number }> = {};
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data.forEach((answer: any) => {
+    // Note: Due to Supabase join, questions might be an array or object depending on relation
+    const category = Array.isArray(answer.questions) ? answer.questions[0]?.category : answer.questions?.category;
+    if (!category) return;
+
+    if (!stats[category]) {
+      stats[category] = { total: 0, correct: 0 };
+    }
+    stats[category].total += 1;
+    if (answer.is_correct) {
+      stats[category].correct += 1;
+    }
+  });
+
+  // Calculate percentages
+  const analyticsData: AnalyticsData[] = Object.keys(stats).map(category => ({
+    category,
+    totalAnswered: stats[category].total,
+    correctAnswers: stats[category].correct,
+    accuracy: Math.round((stats[category].correct / stats[category].total) * 100)
+  }));
+
+  // Sort by highest accuracy
+  return analyticsData.sort((a, b) => b.accuracy - a.accuracy);
+};
+
+// Helper to calculate level based on XP
 export const calculateLevel = (xp: number): number => {
   if (xp >= 700) return 4;
   if (xp >= 300) return 3;

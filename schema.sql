@@ -52,6 +52,7 @@ CREATE TABLE questions (
     option_d TEXT NOT NULL,
     correct_answer TEXT NOT NULL,
     explanation TEXT,
+    image_url TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 

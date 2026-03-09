@@ -19,6 +19,18 @@ export default function QuestionCard({ question, onAnswerSelect, selectedAnswer,
           {question.difficulty}
         </span>
       </div>
+
+      {question.image_url && (
+        <div className="mb-6 flex justify-center">
+          <img
+            src={question.image_url}
+            alt="Pertanyaan Visual"
+            className="max-w-full h-auto rounded-lg shadow-sm border border-gray-200"
+            loading="lazy"
+          />
+        </div>
+      )}
+
       <p className="text-xl text-gray-800 font-medium mb-6">{question.question_text}</p>
       <AnswerOptions
         question={question}

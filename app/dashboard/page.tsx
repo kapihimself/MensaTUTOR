@@ -7,6 +7,7 @@ import Navbar from '@/components/Navbar';
 import ProgressBar from '@/components/ProgressBar';
 import Link from 'next/link';
 import { Roadmap } from '@/types/roadmap';
+import { fetchUserAnalytics, AnalyticsData } from '@/lib/queries';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -16,6 +17,7 @@ export default function Dashboard() {
   const [roadmaps, setRoadmaps] = useState<Roadmap[]>([]);
   const [userData, setUserData] = useState<{ xp: number; level: number; streak: number } | null>(null);
   const [progress, setProgress] = useState(0);
+  const [analytics, setAnalytics] = useState<AnalyticsData[]>([]);
 
   useEffect(() => {
     async function getUser() {
@@ -56,6 +58,10 @@ export default function Dashboard() {
             .eq('completed', true);
 
         setProgress(Math.min((count || 0) * 5, 100)); // Just a dummy calc for now
+
+        // Fetch Analytics
+        const userAnalytics = await fetchUserAnalytics(session.user.id);
+        setAnalytics(userAnalytics);
       }
       setLoading(false);
     }
@@ -85,13 +91,56 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 mb-10">
-          <h2 className="text-2xl font-bold mb-4">Progres Anda</h2>
-          <ProgressBar progress={progress} />
-          <p className="text-gray-600 mb-6">{progress}% Selesai</p>
-          <button className="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-700 transition">
-            Lanjutkan Belajar →
-          </button>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+          <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+            <h2 className="text-2xl font-bold mb-4">Progres Anda</h2>
+            <ProgressBar progress={progress} />
+            <p className="text-gray-600 mb-6">{progress}% Selesai</p>
+            <Link href="/roadmap/1">
+              <button className="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-700 transition">
+                Lanjutkan Belajar →
+              </button>
+            </Link>
+          </div>
+
+          <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+            <h2 className="text-2xl font-bold mb-4">Analitik Kemampuan</h2>
+            {analytics.length === 0 ? (
+              <p className="text-gray-500 italic">Belum ada data untuk dianalisis. Kerjakan latihan untuk melihat kekuatan dan kelemahanmu.</p>
+            ) : (
+              <ul className="space-y-4">
+                {analytics.map((item, idx) => (
+                  <li key={idx} className="flex justify-between items-center border-b border-gray-100 pb-2">
+                    <span className="font-semibold text-gray-800">{item.category}</span>
+                    <span className={`font-bold px-3 py-1 rounded-full text-sm ${item.accuracy >= 80 ? 'bg-green-100 text-green-800' : item.accuracy >= 50 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}`}>
+                      {item.accuracy}% Akurat
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+
+        <div className="mb-10 flex gap-4">
+          <Link href="/simulation">
+             <div className="bg-indigo-600 p-6 rounded-xl shadow-md text-white hover:bg-indigo-700 transition cursor-pointer flex items-center justify-between">
+                <div>
+                   <h2 className="text-2xl font-bold mb-2">🔥 Ujian Simulasi Mensa</h2>
+                   <p className="text-indigo-100">Coba tes waktu 30 menit dan dapatkan estimasi skor IQ kamu.</p>
+                </div>
+                <div className="text-4xl">→</div>
+             </div>
+          </Link>
+          <Link href="/leaderboard">
+             <div className="bg-orange-500 p-6 rounded-xl shadow-md text-white hover:bg-orange-600 transition cursor-pointer flex items-center justify-between">
+                <div>
+                   <h2 className="text-2xl font-bold mb-2">🏆 Papan Peringkat</h2>
+                   <p className="text-orange-100">Lihat siapa yang memiliki XP tertinggi minggu ini.</p>
+                </div>
+                <div className="text-4xl">→</div>
+             </div>
+          </Link>
         </div>
 
         <div>

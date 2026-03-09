@@ -10,6 +10,7 @@ export interface Question {
   option_d: string;
   correct_answer: string;
   explanation: string | null;
+  image_url?: string | null;
   created_at: string;
 }
 
