@@ -20,14 +20,10 @@
 
 Tidak seperti platform kuis biasa yang hanya memberikan nilai akhir, BisaMENSA berfokus pada **Pembelajaran Terstruktur** dengan memberikan **Penjelasan Logika Langkah-demi-Langkah** setiap kali Anda selesai menjawab.
 
-<details>
-  <summary><strong>Buka untuk melihat Pratinjau Dashboard 📸</strong></summary>
   <br/>
   <p align="center">
-    <!-- Di lingkungan production, ganti URL ini dengan screenshot nyata -->
-    <i>*(Bayangkan sebuah dashboard modern berwarna putih/biru, dengan Progress Bar, Skor XP, Streak Harian, dan Analitik Kemampuan berdasarkan Pola Angka, Analogi Verbal, dll!)*</i>
+    <img src="public/preview.png" alt="BisaMENSA Landing Page Preview" width="800" style="border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);" />
   </p>
-</details>
 
 ---
 
